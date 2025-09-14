@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace XNode {
@@ -51,6 +52,18 @@ namespace XNode {
                 }
             }
             nodes.Clear();
+        }
+
+        /// <summary> Gets the first node of the specified type or null if it doesn't exist. </summary>
+        public T GetNode<T>() where T : Node
+        {
+            return nodes.FirstOrDefault(n => n is T) as T;
+        }
+
+        /// <summary> Gets all the nodes of the specified type. </summary>
+        public T[] GetNodes<T>() where T : Node
+        {
+            return nodes.OfType<T>().ToArray();
         }
 
         /// <summary> Create a new deep copy of this graph </summary>
