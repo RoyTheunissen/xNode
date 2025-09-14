@@ -69,9 +69,9 @@ namespace XNode {
         /// <summary> Gets the base type that all nodes must inherit from in order to be used in this graph.
         /// This is useful for limiting a graph to only allowing the creation of nodes of a specific type and
         /// prevent cluttering the Create Node menu with nodes that are not relevant. </summary>
-        public virtual Type GetNodeBaseType()
+        public virtual void GetSupportedNodeTypes(List<Type> types)
         {
-            return typeof(Node);
+            types.Add(typeof(Node));
         }
 
         /// <summary> Create a new deep copy of this graph </summary>

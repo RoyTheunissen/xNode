@@ -34,6 +34,8 @@ namespace XNodeEditor {
             return GetDerivedTypes(typeof(XNode.Node));
         }
 
+        /// <summary> Return an array with all of the node types that the specified node graph supports based on the
+        /// base types that it says it supports. </summary>
         public static Type[] GetNodeTypesCompatibleWithGraph(NodeGraph nodeGraph)
         {
             Type nodeGraphType = nodeGraph.GetType();
@@ -44,12 +46,33 @@ namespace XNodeEditor {
             if (existed)
                 return cachedNodeTypes;
 
-            // The graph can specify a base type that all its nodes should derive from.
-            Type nodeBaseType = nodeGraph.GetNodeBaseType();
-            Type[] compatibleNodeTypes = nodeBaseType == typeof(XNode.Node) ? nodeTypes : GetDerivedTypes(nodeBaseType);
-            cachedNodeGraphTypeToCompatibleNodeTypes.Add(nodeGraphType, compatibleNodeTypes);
+            // The graph can specify various base types that all its nodes should derive from.
+            List<Type> nodeBaseTypes = new();
+            nodeGraph.GetSupportedNodeTypes(nodeBaseTypes);
 
-            return compatibleNodeTypes;
+            // See if we can already assume which node types are derived from the specified types.
+            if (nodeBaseTypes.Count == 0)
+                return Array.Empty<Type>();
+            if (nodeBaseTypes.Count == 1 && nodeBaseTypes[0] == typeof(XNode.Node))
+                return nodeTypes;
+
+            // Couldn't assume, will have to go and find all derived types of the specified types.
+            List<Type> compatibleNodeTypes = new();
+            for (int i = 0; i < nodeBaseTypes.Count; i++)
+            {
+                Type[] derivedTypes = GetDerivedTypes(nodeBaseTypes[i]);
+                foreach (Type derivedType in derivedTypes)
+                {
+                    if (!compatibleNodeTypes.Contains(derivedType))
+                        compatibleNodeTypes.Add(derivedType);
+                }
+            }
+
+            // Cache them so we only have to do this once per graph type.
+            Type[] compatibleNodeTypesArray = compatibleNodeTypes.ToArray();
+            cachedNodeGraphTypeToCompatibleNodeTypes.Add(nodeGraphType, compatibleNodeTypesArray);
+
+            return compatibleNodeTypesArray;
         }
 
         /// <summary> Custom node tint colors defined with [NodeColor(r, g, b)] </summary>
