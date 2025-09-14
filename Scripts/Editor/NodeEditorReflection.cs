@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using XNode;
 #if UNITY_2019_1_OR_NEWER && USE_ADVANCED_GENERIC_MENU
 using GenericMenu = XNodeEditor.AdvancedGenericMenu;
 #endif
@@ -16,6 +17,8 @@ namespace XNodeEditor {
         [NonSerialized] private static Dictionary<Type, int> nodeWidth;
         /// <summary> All available node types </summary>
         public static Type[] nodeTypes { get { return _nodeTypes != null ? _nodeTypes : _nodeTypes = GetNodeTypes(); } }
+
+        [NonSerialized] private static readonly Dictionary<Type, Type[]> cachedNodeGraphTypeToCompatibleNodeTypes = new();
 
         [NonSerialized] private static Type[] _nodeTypes = null;
 
@@ -29,6 +32,24 @@ namespace XNodeEditor {
         public static Type[] GetNodeTypes() {
             //Get all classes deriving from Node via reflection
             return GetDerivedTypes(typeof(XNode.Node));
+        }
+
+        public static Type[] GetNodeTypesCompatibleWithGraph(NodeGraph nodeGraph)
+        {
+            Type nodeGraphType = nodeGraph.GetType();
+
+            // If we have cached this before, return that.
+            bool existed = cachedNodeGraphTypeToCompatibleNodeTypes.TryGetValue(
+                nodeGraphType, out Type[] cachedNodeTypes);
+            if (existed)
+                return cachedNodeTypes;
+
+            // The graph can specify a base type that all its nodes should derive from.
+            Type nodeBaseType = nodeGraph.GetNodeBaseType();
+            Type[] compatibleNodeTypes = nodeBaseType == typeof(XNode.Node) ? nodeTypes : GetDerivedTypes(nodeBaseType);
+            cachedNodeGraphTypeToCompatibleNodeTypes.Add(nodeGraphType, compatibleNodeTypes);
+
+            return compatibleNodeTypes;
         }
 
         /// <summary> Custom node tint colors defined with [NodeColor(r, g, b)] </summary>

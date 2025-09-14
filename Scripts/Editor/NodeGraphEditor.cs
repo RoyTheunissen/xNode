@@ -78,10 +78,12 @@ namespace XNodeEditor {
 
             Type[] nodeTypes;
 
+            Type[] nodeTypesCompatibleWithGraph = NodeEditorReflection.GetNodeTypesCompatibleWithGraph(target);
+
             if (compatiblePortType != null && NodeEditorPreferences.GetSettings().createFilter) {
-                nodeTypes = NodeEditorUtilities.GetCompatibleNodesTypes(NodeEditorReflection.nodeTypes, compatiblePortType, direction).OrderBy(GetNodeMenuOrder).ToArray();
+                nodeTypes = NodeEditorUtilities.GetCompatibleNodesTypes(nodeTypesCompatibleWithGraph, compatiblePortType, direction).OrderBy(GetNodeMenuOrder).ToArray();
             } else {
-                nodeTypes = NodeEditorReflection.nodeTypes.OrderBy(GetNodeMenuOrder).ToArray();
+                nodeTypes = nodeTypesCompatibleWithGraph.OrderBy(GetNodeMenuOrder).ToArray();
             }
 
             for (int i = 0; i < nodeTypes.Length; i++) {
