@@ -71,15 +71,15 @@ namespace XNodeEditor {
         /// Override to add custom menu items.
         /// </summary>
         /// <param name="menu"></param>
-        /// <param name="compatibleType">Use it to filter only nodes with ports value type, compatible with this type</param>
+        /// <param name="compatiblePortType">Use it to filter only nodes with ports value type, compatible with this type</param>
         /// <param name="direction">Direction of the compatiblity</param>
-        public virtual void AddContextMenuItems(GenericMenu menu, Type compatibleType = null, XNode.NodePort.IO direction = XNode.NodePort.IO.Input) {
+        public virtual void AddContextMenuItems(GenericMenu menu, Type compatiblePortType = null, XNode.NodePort.IO direction = XNode.NodePort.IO.Input) {
             Vector2 pos = NodeEditorWindow.current.WindowToGridPosition(Event.current.mousePosition);
 
             Type[] nodeTypes;
 
-            if (compatibleType != null && NodeEditorPreferences.GetSettings().createFilter) {
-                nodeTypes = NodeEditorUtilities.GetCompatibleNodesTypes(NodeEditorReflection.nodeTypes, compatibleType, direction).OrderBy(GetNodeMenuOrder).ToArray();
+            if (compatiblePortType != null && NodeEditorPreferences.GetSettings().createFilter) {
+                nodeTypes = NodeEditorUtilities.GetCompatibleNodesTypes(NodeEditorReflection.nodeTypes, compatiblePortType, direction).OrderBy(GetNodeMenuOrder).ToArray();
             } else {
                 nodeTypes = NodeEditorReflection.nodeTypes.OrderBy(GetNodeMenuOrder).ToArray();
             }

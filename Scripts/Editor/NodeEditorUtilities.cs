@@ -128,7 +128,7 @@ namespace XNodeEditor {
         }
 
         /// <summary>
-        /// Looking for ports with value Type compatible with a given type. 
+        /// Looking for ports with value Type compatible with a given type.
         /// </summary>
         /// <param name="nodeType">Node to search</param>
         /// <param name="compatibleType">Type to find compatiblities</param>
@@ -157,19 +157,19 @@ namespace XNodeEditor {
         /// Filter only node types that contains some port value type compatible with an given type
         /// </summary>
         /// <param name="nodeTypes">List with all nodes type to filter</param>
-        /// <param name="compatibleType">Compatible Type to Filter</param>
+        /// <param name="compatiblePortType">Compatible port Type to Filter</param>
         /// <returns>Return Only Node Types with ports compatible, or an empty list</returns>
-        public static List<Type> GetCompatibleNodesTypes(Type[] nodeTypes, Type compatibleType, XNode.NodePort.IO direction = XNode.NodePort.IO.Input) {
+        public static List<Type> GetCompatibleNodesTypes(Type[] nodeTypes, Type compatiblePortType, XNode.NodePort.IO direction = XNode.NodePort.IO.Input) {
             //Result List
             List<Type> filteredTypes = new List<Type>();
 
             //Return empty list
             if (nodeTypes == null) { return filteredTypes; }
-            if (compatibleType == null) { return filteredTypes; }
+            if (compatiblePortType == null) { return filteredTypes; }
 
             //Find compatiblity
             foreach (Type findType in nodeTypes) {
-                if (HasCompatiblePortType(findType, compatibleType, direction)) {
+                if (HasCompatiblePortType(findType, compatiblePortType, direction)) {
                     filteredTypes.Add(findType);
                 }
             }
