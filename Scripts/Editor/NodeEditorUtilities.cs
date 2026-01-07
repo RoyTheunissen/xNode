@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using XNode;
 using Object = UnityEngine.Object;
 
 namespace XNodeEditor {
@@ -217,7 +218,15 @@ namespace XNodeEditor {
 
         /// <summary> Returns the default name for the node type. </summary>
         public static string NodeDefaultName(Type type) {
-            string typeName = type.Name;
+            // If a node menu attribute is specified, try to use that to determine the name of a node.
+            // Otherwise we can just use the name of the type.
+            Node.CreateNodeMenuAttribute nodeMenuAttribute = type.GetCustomAttribute<Node.CreateNodeMenuAttribute>();
+            string typeName;
+            if (nodeMenuAttribute != null)
+                typeName = Path.GetFileName(nodeMenuAttribute.menuName);
+            else
+                typeName = type.Name;
+
             // Automatically remove redundant 'Node' postfix
             if (typeName.EndsWith("Node")) typeName = typeName.Substring(0, typeName.LastIndexOf("Node"));
             typeName = UnityEditor.ObjectNames.NicifyVariableName(typeName);
